@@ -39,7 +39,7 @@ class OntologyGod(AgentBrain):
                         cp_retrieved = answer.get('name')._value
                         if cp_retrieved not in self.cp_list:
                             self.cp_list.append(cp_retrieved)
-
+        
         print('Ontology God Initialized')
 
     def filter_observations(self, state):
@@ -59,7 +59,7 @@ class OntologyGod(AgentBrain):
 
         # Remove all god agents
         remove_list.append('gravitygod')
-        remove_list.append('rewardgod')
+        #remove_list.append('rewardgod')
 
         # Remove helper objects (avatar agents, goal reached image)
         remove_list.append('human')
@@ -79,24 +79,6 @@ class OntologyGod(AgentBrain):
         # State now only contains rocks (without parts), selector agents and victim
         return state
 
-    def first_tick(self, state):
-        # Code that runs only during the first tick
-
-        # At the first tick, check if there are new CPs that weren't yet shown in the GUI. Retrieve them and store
-        with TypeDB.core_client("localhost:1729") as client:
-            with client.session("CP_ontology", SessionType.DATA) as session:
-                # Session is opened, now specify that it's a read session
-                with session.transaction(TransactionType.READ) as read_transaction:
-                    answer_iterator = read_transaction.query().match(
-                        "match $x isa collaboration_pattern, has name $name; get $name;")
-
-                    for answer in answer_iterator:
-                        cp_retrieved = answer.get('name')._value
-                        if cp_retrieved not in self.cp_list:
-                            self.cp_list.append(cp_retrieved)
-
-        return
-
     def decide_on_action(self, state):
         action_kwargs = {}
         action = None
@@ -115,7 +97,7 @@ class OntologyGod(AgentBrain):
                 # This means that it is an existing CP that gets sent, move to edit functions
                 print('Existing CP name...')
                 self.edit_cp_data(cp_name, cp_situation, cp_actionsA, cp_actionsB, cp_postsitu)
-            else:
+            elif cp_name:
                 # If we end up here, the CP name is new, so we should create a new entry
                 self.send_cp_data(cp_name, cp_situation, cp_actionsA, cp_actionsB, cp_postsitu)
                 self.cp_list.append(cp_name)
@@ -205,16 +187,17 @@ class OntologyGod(AgentBrain):
             # After dealing with each message, remove it
             self.received_messages.remove(message)
 
-            print("Name: ")
-            print(cp_name)
-            print("Start Situation: ")
-            print(cp_situation)
-            print("Actions Human: ")
-            print(cp_actionsA)
-            print("Actions Agent: ")
-            print(cp_actionsB)
-            print("End Situation: ")
-            print(cp_postsitu)
+            if cp_name:
+                print("Name: ")
+                print(cp_name)
+                print("Start Situation: ")
+                print(cp_situation)
+                print("Actions Human: ")
+                print(cp_actionsA)
+                print("Actions Agent: ")
+                print(cp_actionsB)
+                print("End Situation: ")
+                print(cp_postsitu)
 
         return cp_name, cp_situation, cp_actionsA, cp_actionsB, cp_postsitu
 

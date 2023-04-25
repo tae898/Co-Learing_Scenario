@@ -28,7 +28,7 @@ jsonpickle==3.0.1
 markdown-it-py==2.1.0
 MarkupSafe==2.1.1
 matplotlib-inline==0.1.6
-matrx==2.3.1
+matrx==2.2.0
 mccabe==0.7.0
 mdformat==0.7.16
 mdurl==0.1.2

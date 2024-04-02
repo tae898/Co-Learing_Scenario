@@ -1177,7 +1177,8 @@ class RobotPartner(AgentBrain):
 
                         if location_present:
                             # The human did the action, so we can remove it from the action list and continue
-                            self.cp_actions.remove(self.current_human_action)
+                            if self.current_human_action in self.cp_actions:
+                                self.cp_actions.remove(self.current_human_action)
                             self.current_human_action = None
                             # Also empty the past human actions list as we're moving to a new cycle
                             self.past_human_actions = []

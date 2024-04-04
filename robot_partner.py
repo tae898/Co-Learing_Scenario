@@ -1771,6 +1771,7 @@ class RobotPartner(AgentBrain):
                 coordinates = random.choice(poss_locations)
             elif 'Large' in location:
                 poss_locations = []
+                dist_list = []
                 large_objs = self.state[{'large': True, 'is_movable': True}]
                 if large_objs is not None:
                     # There are large objects to be on top of
@@ -1778,9 +1779,13 @@ class RobotPartner(AgentBrain):
                         obj_location = obj['location']
                         y_loc_above = obj_location[1]
                         poss_locations.append((obj_location[0], y_loc_above))
-                    coordinates = random.choice(poss_locations)
+                        dist = int(np.ceil(np.linalg.norm(np.array(obj_location)
+                                                          - np.array(self.state[self.agent_id]['location']))))
+                        dist_list.append(dist)
+                coordinates = poss_locations[dist_list.index(min(dist_list))]
             elif 'Small' in location:
                 poss_locations = []
+                dist_list = []
                 small_objs = self.state[{'name': 'rock1'}] + self.state[{'bound_to': None}]
                 if small_objs is not None:
                     # There are small objects to be on top of
@@ -1788,13 +1793,16 @@ class RobotPartner(AgentBrain):
                         obj_location = obj['location']
                         y_loc_above = obj_location[1]
                         poss_locations.append((obj_location[0], y_loc_above))
-                    coordinates = random.choice(poss_locations)
+                        dist = int(np.ceil(np.linalg.norm(np.array(obj_location)
+                                                          - np.array(self.state[self.agent_id]['location']))))
+                        dist_list.append(dist)
+                    coordinates = poss_locations[dist_list.index(min(dist_list))]
             elif 'Brown' in location:
                 poss_locations = []
                 brown_objs = self.state[{"obstruction": True}]
                 if brown_objs is not None:
                     # There are brown objects to be on top of
-                    for obj in brown_objs:
+                    for obj in [brown_objs]:
                         obj_location = obj['location']
                         y_loc_above = obj_location[1]
                         poss_locations.append((obj_location[0], y_loc_above))
@@ -2180,6 +2188,7 @@ class RobotPartner(AgentBrain):
                 except:
                     # Make sure we store only 5 past human actions max
                     print('random other message')
+                    print(message)
 
             # After dealing with each message, remove it
             self.received_messages.remove(message)

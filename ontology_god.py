@@ -208,6 +208,8 @@ class OntologyGod(AgentBrain):
 
                 # Situation split: the input consists of a list with the input from each box
                 for situation_condition in cp_situation_input:
+                    if 'delete' in cp_situation:
+                        cp_situation = []
                     # For each action in this list, we have to identify all items
                     cp_situation.append(self.identify_items(situation_condition))
 

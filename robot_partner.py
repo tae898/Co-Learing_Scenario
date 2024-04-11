@@ -460,8 +460,8 @@ class RobotPartner(AgentBrain):
                 obj_type = 'vert'
             if "long" in carrying_obj:
                 obj_type = 'long'
-                if chosen_loc is not None and chosen_loc[0] > 2:
-                    chosen_loc[0] = 2
+                #if chosen_loc is not None and chosen_loc[0] > 2:
+                #    chosen_loc[0] = 2
 
             # Choose location for dropping
             if chosen_loc is None:

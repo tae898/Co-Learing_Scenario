@@ -458,10 +458,12 @@ class RobotPartner(AgentBrain):
 
             if "vert" in carrying_obj:
                 obj_type = 'vert'
+                if chosen_loc is not None and chosen_loc[1] > 7:
+                    chosen_loc = (chosen_loc[0], 7)
             if "long" in carrying_obj:
                 obj_type = 'long'
-                #if chosen_loc is not None and chosen_loc[0] > 2:
-                #    chosen_loc[0] = 2
+                if chosen_loc is not None and chosen_loc[0] > 1 and chosen_loc[0] < 5:
+                    chosen_loc = (1, chosen_loc[1])
 
             # Choose location for dropping
             if chosen_loc is None:
@@ -1745,17 +1747,17 @@ class RobotPartner(AgentBrain):
             poss_yloc = list(range(0, 10))
             for x in poss_xloc:
                 for y in poss_yloc:
-                    if self.state[{"location": (x, y)}] is not None:
+                    if self.state[{"location": (x, y)}] is None:
                         poss_coordinates.append((x, y))
             coordinates = random.choice(poss_coordinates)
         elif location == 'Right side of rock pile':
             coordinates = ()
             poss_coordinates = []
-            poss_xloc = list(range(5, 9))
+            poss_xloc = list(range(10, 14))
             poss_yloc = list(range(0, 10))
             for x in poss_xloc:
                 for y in poss_yloc:
-                    if self.state[{"location": (x, y)}] is not None:
+                    if self.state[{"location": (x, y)}] is None:
                         poss_coordinates.append((x, y))
             coordinates = random.choice(poss_coordinates)
         elif location == 'Left side of field':
@@ -2155,9 +2157,9 @@ class RobotPartner(AgentBrain):
                 print("New end conditions:")
                 print(self.end_conditions)
                 # Also delete from q-tables
-                if cp_name not in self.cp_list:
-                    self.q_table_cps.drop(cp_name, axis=1, inplace=True)
-                    self.q_table_cps_runs.drop(cp_name, axis=1, inplace=True)
+                #if cp_name not in self.cp_list:
+                #    self.q_table_cps.drop(cp_name, axis=1, inplace=True)
+                #    self.q_table_cps_runs.drop(cp_name, axis=1, inplace=True)
             elif isinstance(message, dict) and 'cp_edit' in message:
                 # An existing CP was edited, double check that it was already in the list
                 cp_name = message['cp_edit']

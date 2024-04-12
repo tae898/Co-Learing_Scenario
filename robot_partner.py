@@ -2292,7 +2292,7 @@ class RobotPartner(AgentBrain):
                     msg = f"Now executing {current_action['task']['task_name']} a {obj_tograb} rock at {current_action['location']['range']}"
                 elif 'location' in current_action.keys():
                     msg = f"Now executing {current_action['task']['task_name']} at {current_action['location']['range']}"
-                elif current_action['resource']:
+                elif 'resource' in current_action.keys():
                     obj_tograb = current_action['resource']['size']
                     msg = f"Now executing {current_action['task']['task_name']} a {obj_tograb} rock"
                 else:

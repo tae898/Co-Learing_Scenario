@@ -426,7 +426,8 @@ class RobotPartner(AgentBrain):
 
         # Add move action to action list
         self.navigator.add_waypoint(object_loc)
-        route_actions = list(self.navigator._Navigator__get_route(self.state_tracker).values())
+        route_in_between = self.navigator._Navigator__get_route(self.state_tracker).values()
+        route_actions = list(route_in_between)
         for action in route_actions:
             self.actionlist[0].append(action)
             self.actionlist[1].append({})

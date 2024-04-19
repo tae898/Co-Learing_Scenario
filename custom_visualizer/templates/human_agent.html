@@ -583,8 +583,17 @@
           block_to_insert.className = draggableElement.className;
           block_to_insert.innerHTML = draggableElement.innerHTML;
           block_to_insert.setAttribute('clonable','false');
-          dropzoneElement.appendChild(block_to_insert);
-          nr_drops = nr_drops +1;
+
+          if (block_to_insert.className.includes('task') & dropzoneElement.className.includes('box_situ')) {
+            window.alert("You cannot use actions in the situation description.");
+          }
+          else if (block_to_insert.className.includes('task') & dropzoneElement.innerHTML.includes('task')) {
+            window.alert("You can only add one action per grey box.");
+          }
+          else {
+            dropzoneElement.appendChild(block_to_insert);
+            nr_drops = nr_drops +1;
+          }
           //add code that saves that this object has been dropped in this block and that snaps it to position?
         },
         ondropdeactivate: function (event) {

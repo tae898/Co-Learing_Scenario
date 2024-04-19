@@ -85,6 +85,8 @@ class RobotPartner(AgentBrain):
 
         self.database_name = None
 
+        self.wait_message_sent = False
+
         # Code that ensures backed up q-tables are retrieved in case of crash
         print("Retrieving backed up q-tables...")
         try:
@@ -1169,10 +1171,25 @@ class RobotPartner(AgentBrain):
                 # The robot needs to translate the current_robot_action to an actual action
                 #print('We need to translate the current action to an actual action.')
                 self.translate_action(self.current_robot_action, state)
+                if self.wait_message_sent:
+                    self.wait_message_sent = False
             elif self.current_human_action:
                 # If the robot is not doing anything, but the human is supposed to do something, check if they did it yet
                 #print("Check if the human did their task")
                 if len(self.past_human_actions) > 0:
+                    # Formulate a message in case the human didn't do their action yet
+                    msg = None
+                    if 'resource' in self.current_human_action.keys() and 'location' in self.current_human_action.keys():
+                        obj_tograb = self.current_human_action['resource']['size']
+                        msg = f"Waiting for human to {self.current_human_action['task']['task_name']} a {obj_tograb} rock at {self.current_human_action['location']['range']}"
+                    elif 'location' in self.current_human_action.keys():
+                        msg = f"Waiting for human to {self.current_human_action['task']['task_name']} at {self.current_human_action['location']['range']}"
+                    elif 'resource' in self.current_human_action.keys():
+                        obj_tograb = self.current_human_action['resource']['size']
+                        msg = f"Waiting for human to {self.current_human_action['task']['task_name']} a {obj_tograb} rock"
+                    else:
+                        msg = f"Waiting for human to {self.current_human_action['task']['task_name']}"
+
                     if self.current_human_action['task']['task_name'] in np.array([val[0] for val in self.past_human_actions]):
                         # This means that the action we're looking for is in the past 5 actions of the human.
                         # Now we need to check if the location is also present
@@ -1196,6 +1213,16 @@ class RobotPartner(AgentBrain):
                             # If the CP actions list ends up empty here, we should do a reward update
                             if len(self.cp_actions) == 0 and self.executing_cp in self.cp_list:
                                 self.reward_update_cps()
+                        else:
+                            # The human did the action but not in the right location
+                            if not self.wait_message_sent:
+                                self.send_message(Message(content=msg, from_id=self.agent_id, to_id=None))
+                                self.wait_message_sent = True
+                    else:
+                        # The human did not yet do the action
+                        if not self.wait_message_sent:
+                            self.send_message(Message(content=msg, from_id=self.agent_id, to_id=None))
+                            self.wait_message_sent = True
                 # In the meantime, the robot should idle and wait for the human to finish their task
                 #self.wait_action(None)
             else:

@@ -593,6 +593,10 @@
           else {
             dropzoneElement.appendChild(block_to_insert);
             nr_drops = nr_drops +1;
+            // Check if the blocks all fit in the situation container, otherwise make it bigger
+            if (dropzoneElement.innerHTML.length > 230 & dropzoneElement.className.includes('box_situ')) {
+                dropzoneElement.style.height = "100px";
+            }
           }
           //add code that saves that this object has been dropped in this block and that snaps it to position?
         },

@@ -364,9 +364,12 @@ class RobotPartner(AgentBrain):
         object_loc = self.state[chosen_object]['location']
 
         # Add move action to action list
+        route_actions = []
         self.navigator.add_waypoint(object_loc)
-        route_in_between = self.navigator._Navigator__get_route(self.state_tracker).values()
-        route_actions = list(route_in_between)
+        print(self.navigator._Navigator__get_route(self.state_tracker))
+        if isinstance(self.navigator._Navigator__get_route(self.state_tracker), dict):
+            route_in_between = self.navigator._Navigator__get_route(self.state_tracker).values()
+            route_actions = list(route_in_between)
         for action in route_actions:
             self.actionlist[0].append(action)
             self.actionlist[1].append({})
@@ -428,9 +431,12 @@ class RobotPartner(AgentBrain):
             return
 
         # Add move action to action list
+        route_actions = []
         self.navigator.add_waypoint(object_loc)
-        route_in_between = self.navigator._Navigator__get_route(self.state_tracker).values()
-        route_actions = list(route_in_between)
+        print(self.navigator._Navigator__get_route(self.state_tracker))
+        if isinstance(self.navigator._Navigator__get_route(self.state_tracker), dict):
+            route_in_between = self.navigator._Navigator__get_route(self.state_tracker).values()
+            route_actions = list(route_in_between)
         for action in route_actions:
             self.actionlist[0].append(action)
             self.actionlist[1].append({})
@@ -487,9 +493,12 @@ class RobotPartner(AgentBrain):
                     chosen_loc = (x_loc, agent_loc[1]-2)
 
             # Add move action to action list
-            self.navigator.add_waypoint(chosen_loc)         # Add some code that searches for an empty spot out of the field
-            route_in_between = self.navigator._Navigator__get_route(self.state_tracker).values()
-            route_actions = list(route_in_between)
+            route_actions = []
+            self.navigator.add_waypoint(chosen_loc)
+            print(self.navigator._Navigator__get_route(self.state_tracker))
+            if isinstance(self.navigator._Navigator__get_route(self.state_tracker), dict):
+                route_in_between = self.navigator._Navigator__get_route(self.state_tracker).values()
+                route_actions = list(route_in_between)
             for action in route_actions:
                 self.actionlist[0].append(action)
                 self.actionlist[1].append({})
@@ -538,9 +547,12 @@ class RobotPartner(AgentBrain):
                 large_obj.append(part)
 
         # Add move action to action list
+        route_actions = []
         self.navigator.add_waypoint(object_loc)
-        route_in_between = self.navigator._Navigator__get_route(self.state_tracker).values()
-        route_actions = list(route_in_between)
+        print(self.navigator._Navigator__get_route(self.state_tracker))
+        if isinstance(self.navigator._Navigator__get_route(self.state_tracker), dict):
+            route_in_between = self.navigator._Navigator__get_route(self.state_tracker).values()
+            route_actions = list(route_in_between)
         for action in route_actions:
             self.actionlist[0].append(action)
             self.actionlist[1].append({})
@@ -558,9 +570,12 @@ class RobotPartner(AgentBrain):
         # Check if there is a specific location in which we should wait
         if location is not None:
             # Then add move actions first
+            route_actions = []
             self.navigator.add_waypoint(location)
-            route_in_between = self.navigator._Navigator__get_route(self.state_tracker).values()
-            route_actions = list(route_in_between)
+            print(self.navigator._Navigator__get_route(self.state_tracker))
+            if isinstance(self.navigator._Navigator__get_route(self.state_tracker), dict):
+                route_in_between = self.navigator._Navigator__get_route(self.state_tracker).values()
+                route_actions = list(route_in_between)
             for action in route_actions:
                 self.actionlist[0].append(action)
                 self.actionlist[1].append({})
@@ -575,9 +590,12 @@ class RobotPartner(AgentBrain):
         # Check if there is a specific location in which we should move
         if location is not None:
             # Then add move actions to this location first
+            route_actions = []
             self.navigator.add_waypoint(location)
-            route_in_between = self.navigator._Navigator__get_route(self.state_tracker).values()
-            route_actions = list(route_in_between)
+            print(self.navigator._Navigator__get_route(self.state_tracker))
+            if isinstance(self.navigator._Navigator__get_route(self.state_tracker), dict):
+                route_in_between = self.navigator._Navigator__get_route(self.state_tracker).values()
+                route_actions = list(route_in_between)
             for action in route_actions:
                 self.actionlist[0].append(action)
                 self.actionlist[1].append({})

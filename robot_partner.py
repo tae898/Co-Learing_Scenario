@@ -87,6 +87,8 @@ class RobotPartner(AgentBrain):
 
         self.wait_message_sent = False
 
+        self.object_absent_sent = False
+
         # Code that ensures backed up q-tables are retrieved in case of crash
         print("Retrieving backed up q-tables...")
         try:
@@ -867,6 +869,7 @@ class RobotPartner(AgentBrain):
                 self.actionlist = [[], []]
                 self.navigator.reset_full()     # Reset navigator to make sure there are no remaining waypoints
                 self.cp_actions = []
+                self.object_absent_sent = False
                 # Reset progress variables
                 self.record_progress(True)
             else:
@@ -1245,6 +1248,8 @@ class RobotPartner(AgentBrain):
                 #self.wait_action(None)
             else:
                 print("Find the next actions")
+                if self.object_absent_sent:
+                    self.object_absent_sent = False
                 # If none of the agents have something to do, check for the next tasks
                 order_values = []
                 # Store and/or retrieve what position in the CP we're at (which action)
@@ -1522,6 +1527,7 @@ class RobotPartner(AgentBrain):
                         else:
                             # There is no such object, can't perform this action
                             print("Can't perform this action, object doesn't exist.")
+                            self.communicate_object_absent(object_size, task_location)
                     elif isinstance(relevant_objects, list):
                         objects_right_location= []
                         # It is a list, we'll need to loop through
@@ -1533,10 +1539,16 @@ class RobotPartner(AgentBrain):
                             elif task_location in self.translate_location(object['obj_id'], object_size):
                                 # It is the same, this is an object we can choose!
                                 objects_right_location.append(object)
-                        self.pickup_large_action(objects_right_location, state, state[self.agent_id]['location'])
+                        if len(objects_right_location) > 0:
+                            self.pickup_large_action(objects_right_location, state, state[self.agent_id]['location'])
+                        else:
+                            # There is no such object, can't perform this action
+                            print("Can't perform this action, object doesn't exist.")
+                            self.communicate_object_absent(object_size, task_location)
                 else:
                     # There is no such object, can't perform this action
                     print("Can't perform this action, object doesn't exist.")
+                    self.communicate_object_absent(object_size, task_location)
                 return
             elif 'small' in object_size:
                 # We have to pick up a small rock
@@ -1554,6 +1566,7 @@ class RobotPartner(AgentBrain):
                         else:
                             # There is no such object, can't perform this action
                             print("Can't perform this action, object doesn't exist.")
+                            self.communicate_object_absent(object_size, task_location)
                     elif isinstance(relevant_objects, list):
                         objects_right_location= []
                         # It is a list, we'll need to loop through
@@ -1569,6 +1582,7 @@ class RobotPartner(AgentBrain):
                 else:
                     # There is no such object, can't perform this action
                     print("Can't perform this action, object doesn't exist.")
+                    self.communicate_object_absent(object_size, task_location)
                 return
         elif 'Stand still' in task_name:
             # We should move to the location specified and stand still there
@@ -1597,6 +1611,7 @@ class RobotPartner(AgentBrain):
                     else:
                         # There is no such object, can't perform this action
                         print("Can't perform this action, object doesn't exist.")
+                        self.communicate_object_absent('large', task_location)
                 elif isinstance(relevant_objects, list):
                     objects_right_location = []
                     # It is a list, we'll need to loop through
@@ -1609,6 +1624,7 @@ class RobotPartner(AgentBrain):
             else:
                 # There is no such object, can't perform this action
                 print("Can't perform this action, object doesn't exist.")
+                self.communicate_object_absent('large', task_location)
             return
         elif 'Move back and forth' in task_name:
             # Add the move back and forth action to the actionlist
@@ -1841,7 +1857,7 @@ class RobotPartner(AgentBrain):
             elif 'Small' in location:
                 poss_locations = []
                 dist_list = []
-                small_objs = self.state[{'name': 'rock1'}] + self.state[{'bound_to': None}]
+                small_objs = self.state[{'name': 'rock1'}] #+ self.state[{'bound_to': None}]
                 if small_objs is not None:
                     # There are small objects to be on top of
                     for obj in small_objs:
@@ -2354,6 +2370,19 @@ class RobotPartner(AgentBrain):
         # Communicate if it is a pick up, break or drop action
         self.send_message(Message(content= msg, from_id=self.agent_id, to_id=None))
 
+        return
+
+    def communicate_object_absent(self, object, location):
+        msg = None
+
+        if object is not None and location is not None:
+            msg = f"There is no {object} rock at {location}"
+        elif object is not None:
+            msg = f"There is no {object} rock"
+
+        if not self.object_absent_sent:
+            self.send_message(Message(content=msg, from_id=self.agent_id, to_id=None))
+            self.object_absent_sent = True
         return
 
     def human_standstill(self):

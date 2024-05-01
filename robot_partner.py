@@ -1236,9 +1236,22 @@ class RobotPartner(AgentBrain):
                                 self.reward_update_cps()
                         else:
                             # The human did the action but not in the right location
-                            if not self.wait_message_sent:
-                                self.send_message(Message(content=msg, from_id=self.agent_id, to_id=None))
-                                self.wait_message_sent = True
+                            # Check if maybe there wasn't a location specified
+                            if 'location' in self.current_human_action.keys():
+                                if not self.wait_message_sent:
+                                    self.send_message(Message(content=msg, from_id=self.agent_id, to_id=None))
+                                    self.wait_message_sent = True
+                            else:
+                                # No location specified so we can count the action as done, remove and continue
+                                if self.current_human_action in self.cp_actions:
+                                    self.cp_actions.remove(self.current_human_action)
+                                self.current_human_action = None
+                                # Also empty the past human actions list as we're moving to a new cycle
+                                self.past_human_actions = []
+
+                                # If the CP actions list ends up empty here, we should do a reward update
+                                if len(self.cp_actions) == 0 and self.executing_cp in self.cp_list:
+                                    self.reward_update_cps()
                     else:
                         # The human did not yet do the action
                         if not self.wait_message_sent:

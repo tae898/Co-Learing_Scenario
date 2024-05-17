@@ -364,6 +364,7 @@ class RobotPartner(AgentBrain):
 
         chosen_object = small_obj[y_loc_list.index(min(y_loc_list))]    # Pick object with smallest y
         object_loc = self.state[chosen_object]['location']
+        self.navigator.reset_full()
 
         # Add move action to action list
         route_actions = []
@@ -431,6 +432,7 @@ class RobotPartner(AgentBrain):
 
         if object_loc is None:
             return
+        self.navigator.reset_full()
 
         # Add move action to action list
         route_actions = []
@@ -494,6 +496,8 @@ class RobotPartner(AgentBrain):
                     x_loc = random.choice(possible_xloc)
                     chosen_loc = (x_loc, agent_loc[1]-2)
 
+            self.navigator.reset_full()
+
             # Add move action to action list
             route_actions = []
             self.navigator.add_waypoint(chosen_loc)
@@ -548,6 +552,8 @@ class RobotPartner(AgentBrain):
             if self.state[part]['bound_to'] == large_name:
                 large_obj.append(part)
 
+        self.navigator.reset_full()
+
         # Add move action to action list
         route_actions = []
         self.navigator.add_waypoint(object_loc)
@@ -571,6 +577,7 @@ class RobotPartner(AgentBrain):
     def wait_action(self, location):
         # Check if there is a specific location in which we should wait
         if location is not None:
+            self.navigator.reset_full()
             # Then add move actions first
             route_actions = []
             self.navigator.add_waypoint(location)
@@ -591,6 +598,7 @@ class RobotPartner(AgentBrain):
     def move_back_forth_action(self, location):
         # Check if there is a specific location in which we should move
         if location is not None:
+            self.navigator.reset_full()
             # Then add move actions to this location first
             route_actions = []
             self.navigator.add_waypoint(location)
